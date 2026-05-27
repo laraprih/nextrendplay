@@ -11,9 +11,23 @@ export async function GET(request: NextRequest) {
   try {
     // ── VÍDEOS ───────────────────────────────────────────────────────────────
     if (type === 'videos') {
+      // TikTok/Reels do mock — sempre incluídos para variedade de plataformas
+      // O player busca YouTube equivalente pelo título quando não há embedUrl
+      const tiktokEntries = mockVideos.filter(v =>
+        v.platform === 'tiktok' || v.platform === 'reels'
+      )
+
       if (process.env.YOUTUBE_API_KEY) {
-        const videos = await fetchTrendingYouTubeVideos()
-        if (videos.length > 0) return NextResponse.json({ source: 'youtube', data: videos })
+        const ytVideos = await fetchTrendingYouTubeVideos()
+        if (ytVideos.length > 0) {
+          // Combina: YouTube real na frente + TikTok/Reels intercalados
+          const combined = [...ytVideos]
+          tiktokEntries.forEach((tt, i) => {
+            const pos = Math.min(i * 4 + 2, combined.length)
+            combined.splice(pos, 0, tt)
+          })
+          return NextResponse.json({ source: 'youtube+tiktok', data: combined })
+        }
       }
 
       return NextResponse.json({ source: 'mock', data: mockVideos })
