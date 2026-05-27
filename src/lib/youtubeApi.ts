@@ -137,7 +137,7 @@ function buildVideo(item: YTItem, appCat: string): ViralVideo | null {
     title,
     thumbnail,
     videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
-    embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`,
+    embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1&origin=https://nextrend-livid.vercel.app`,
     platform,
     views,
     likes,

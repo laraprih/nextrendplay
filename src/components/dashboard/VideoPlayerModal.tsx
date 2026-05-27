@@ -155,8 +155,9 @@ export default function VideoPlayerModal({ video, onClose }: VideoPlayerModalPro
               src={resolved.embedUrl}
               title={resolved.title}
               className="absolute inset-0 w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
               allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
             />
           )}
 
@@ -369,13 +370,10 @@ export default function VideoPlayerModal({ video, onClose }: VideoPlayerModalPro
             </a>
           </div>
 
-          {/* Nota sobre API key */}
+          {/* Nota sobre plataforma */}
           {!video.embedUrl && (
             <p className="text-[9px] text-center leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              {process.env.YOUTUBE_API_KEY
-                ? `Busca YouTube ativa · ${platform} sem embed nativo`
-                : `Configure YOUTUBE_API_KEY no .env.local para busca automática de vídeos`
-              }
+              {platform} · busca automática via YouTube
             </p>
           )}
         </div>

@@ -64,7 +64,7 @@ export async function searchYouTube(
     if (!videoId) return null
 
     return {
-      embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`,
+      embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1&origin=https://nextrend-livid.vercel.app`,
       videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
       title: item.snippet?.title ?? query,
       thumbnail: item.snippet?.thumbnails?.high?.url ?? '',
@@ -124,7 +124,7 @@ export async function resolveVideoEmbed(params: {
     const ytMatch = videoUrl.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/)
     if (ytMatch) {
       return {
-        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
+        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&enablejsapi=1&origin=https://nextrend-livid.vercel.app`,
         videoUrl: `https://www.youtube.com/watch?v=${ytMatch[1]}`,
         title,
         thumbnail: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`,
