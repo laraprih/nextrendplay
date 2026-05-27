@@ -1,65 +1,92 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import Sidebar from '@/components/dashboard/Sidebar'
+import Dashboard from '@/components/dashboard/Dashboard'
+import { useTheme } from '@/components/ThemeProvider'
+import { Menu, TrendingUp, Bell, Sun, Moon } from 'lucide-react'
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState('dashboard')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { theme, toggle } = useTheme()
+
+  const tabLabels: Record<string, string> = {
+    dashboard:   'Dashboard',
+    videos:      'Vídeos Virais',
+    trending:    'Produtos Virais',
+    tiktok:      'TikTok Shop',
+    marketplace: 'Marketplaces',
+    ads:         'Anúncios',
+    search:      'Pesquisar',
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-base)' }}>
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileMenuOpen(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-60 border-r" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
+            <Sidebar activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setMobileMenuOpen(false) }} />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      )}
+
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Topbar */}
+        <header className="h-14 backdrop-blur-xl border-b flex items-center px-4 gap-3 shrink-0"
+          style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)' }}>
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="lg:hidden p-1.5 rounded-lg transition-colors"
+            style={{ color: 'var(--text-muted)' }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <div className="flex items-center gap-2">
+            <div className="lg:hidden w-6 h-6 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+              <TrendingUp className="w-3.5 h-3.5 text-white" />
+            </div>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              {tabLabels[activeTab]}
+            </h2>
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs rounded-full px-3 py-1.5 border"
+              style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Meta Ad Library Ativo
+            </div>
+
+            {/* Theme toggle */}
+            <button
+              onClick={toggle}
+              className="p-1.5 rounded-lg transition-all"
+              style={{ color: 'var(--text-secondary)' }}
+              title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <button className="relative p-1.5 rounded-lg transition-colors" style={{ color: 'var(--text-muted)' }}>
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-purple-500" />
+            </button>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <div className="pointer-events-none fixed inset-0 overflow-hidden">
+            <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-purple-600/5 blur-3xl" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-pink-600/5 blur-3xl" />
+          </div>
+          <Dashboard activeTab={activeTab} />
+        </main>
+      </div>
     </div>
-  );
+  )
 }
