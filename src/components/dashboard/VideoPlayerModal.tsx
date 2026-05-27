@@ -65,13 +65,30 @@ export default function VideoPlayerModal({ video, onClose }: VideoPlayerModalPro
         videoUrl: video.videoUrl,
         title: video.title,
         channelName: video.author,
-        platform: 'youtube',
+        platform: video.embedUrl.includes('tiktok') ? 'tiktok' : 'youtube',
       })
       setPlayerState('playing')
       return
     }
 
-    // 3. Busca URL real no servidor
+    // 2b. TikTok com ID real no URL → embed direto no browser (sem passar pelo servidor)
+    // TikTok bloqueia requisições de servidor mas permite embeds no browser do usuário
+    if (video.platform === 'tiktok' || video.platform === 'reels') {
+      const match = video.videoUrl.match(/\/video\/(\d+)/)
+      if (match) {
+        setResolved({
+          embedUrl: `https://www.tiktok.com/embed/v2/${match[1]}`,
+          videoUrl: video.videoUrl,
+          title: video.title,
+          channelName: video.author,
+          platform: 'tiktok',
+        })
+        setPlayerState('playing')
+        return
+      }
+    }
+
+    // 3. Busca URL real no servidor (YouTube search como fallback)
     setPlayerState('loading')
     setErrorMsg('')
 
@@ -151,14 +168,28 @@ export default function VideoPlayerModal({ video, onClose }: VideoPlayerModalPro
         >
           {/* ESTADO: PLAYING → iframe */}
           {playerState === 'playing' && resolved?.embedUrl && (
-            <iframe
-              src={resolved.embedUrl}
-              title={resolved.title}
-              className="absolute inset-0 w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-              allowFullScreen
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
+            resolved.platform === 'tiktok' ? (
+              // TikTok embed: proporção 9:16 centralizado
+              <div className="absolute inset-0 flex items-center justify-center bg-black">
+                <iframe
+                  src={resolved.embedUrl}
+                  title={resolved.title}
+                  style={{ width: '100%', maxWidth: '340px', height: '100%', maxHeight: '600px', border: 0 }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
+              </div>
+            ) : (
+              <iframe
+                src={resolved.embedUrl}
+                title={resolved.title}
+                className="absolute inset-0 w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            )
           )}
 
           {/* ESTADO: LOADING → spinner */}
